@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 
 public class MostRecentlyInsertedQueueTest {
     private Queue<Integer> intQueue;
-    private Queue<String> strQueue;
 
     @Before
     public void setup() {
@@ -19,12 +18,6 @@ public class MostRecentlyInsertedQueueTest {
         intQueue.offer(2);
         intQueue.offer(3);
 
-        strQueue = new MostRecentlyInsertedQueue<>(5);
-        strQueue.add("one");
-        strQueue.add("two");
-        strQueue.add("three");
-        strQueue.add("four");
-        strQueue.add("five");
 
     }
 
@@ -139,34 +132,29 @@ public class MostRecentlyInsertedQueueTest {
 
     @Test
     public void pollShouldRemoveOneElementFromHead() {
-        Queue<Integer> queue = new MostRecentlyInsertedQueue<>(3);
-        queue.offer(1);
-        queue.offer(2);
-        queue.add(3);
-
-        int poll1 = queue.poll();
+        int poll1 = intQueue.poll();
         Integer[] expected1 = {2, 3};
-        Integer[] actual1 = queue.stream().toArray(Integer[]::new);
+        Integer[] actual1 = intQueue.stream().toArray(Integer[]::new);
 
         assertEquals(1, poll1);
         assertArrayEquals(expected1, actual1);
-        assertEquals(2, queue.size());
+        assertEquals(2, intQueue.size());
 
-        int poll2 = queue.poll();
+        int poll2 = intQueue.poll();
         Integer[] expected2 = {3};
-        Integer[] actual2 = queue.stream().toArray(Integer[]::new);
+        Integer[] actual2 = intQueue.stream().toArray(Integer[]::new);
 
         assertEquals(2, poll2);
         assertArrayEquals(expected2, actual2);
-        assertEquals(1, queue.size());
+        assertEquals(1, intQueue.size());
 
-        int poll3 = queue.poll();
+        int poll3 = intQueue.poll();
         Integer[] expected3 = {};
-        Integer[] actual3 = queue.stream().toArray(Integer[]::new);
+        Integer[] actual3 = intQueue.stream().toArray(Integer[]::new);
 
         assertEquals(3, poll3);
         assertArrayEquals(expected3, actual3);
-        assertEquals(0, queue.size());
+        assertEquals(0, intQueue.size());
     }
 
     @Test
@@ -178,34 +166,25 @@ public class MostRecentlyInsertedQueueTest {
 
     @Test
     public void peekShouldReturnHeadElementWithoutRemovingItFromQueue() {
-        Queue<Integer> queue = new MostRecentlyInsertedQueue<>(5);
-
-        queue.offer(1);
-        queue.offer(2);
-        queue.offer(3);
-
-        int peek1 = queue.peek();
+        int peek1 = intQueue.peek();
         Integer[] expected1 = {1, 2, 3};
-        Integer[] actual1 = queue.stream().toArray(Integer[]::new);
+        Integer[] actual1 = intQueue.stream().toArray(Integer[]::new);
 
         assertEquals(1, peek1);
         assertArrayEquals(expected1, actual1);
 
-        int peek2 = queue.peek();
+        int peek2 = intQueue.peek();
 
         assertEquals(peek1, peek2);
     }
 
     @Test
     public void clearShouldEmptyQueue() {
-        Queue<Integer> queue = new MostRecentlyInsertedQueue<>(5);
-        queue.offer(1);
-        queue.add(2);
-        queue.clear();
+        intQueue.clear();
 
-        assertArrayEquals(new Integer[]{}, queue.stream().toArray(Integer[]::new));
-        assertEquals(0, queue.size());
-        assertTrue(queue.isEmpty());
+        assertArrayEquals(new Integer[]{}, intQueue.stream().toArray(Integer[]::new));
+        assertEquals(0, intQueue.size());
+        assertTrue(intQueue.isEmpty());
     }
 
     @Test
@@ -222,14 +201,9 @@ public class MostRecentlyInsertedQueueTest {
 
     @Test
     public void containsShouldReturnTrueOnlyIfThereIsSuchElementInQueue() {
-        Queue<String> queue = new MostRecentlyInsertedQueue<>(5);
-
-        queue.add("one");
-        queue.add("two");
-
-        assertTrue(queue.contains("one"));
-        assertTrue(queue.contains("two"));
-        assertFalse(queue.contains("three"));
+        assertTrue(intQueue.contains(1));
+        assertTrue(intQueue.contains(2));
+        assertFalse(intQueue.contains(101));
     }
 
     @Test
@@ -270,8 +244,15 @@ public class MostRecentlyInsertedQueueTest {
     @SuppressWarnings("unchecked")
     @Test
     public void queueShouldBeSerializable() throws IOException, ClassNotFoundException {
-        try(ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(
-                                            new FileOutputStream("testdata.dat")))) {
+        Queue<String> strQueue = new MostRecentlyInsertedQueue<>(5);
+        strQueue.add("one");
+        strQueue.add("two");
+        strQueue.add("three");
+        strQueue.add("four");
+        strQueue.add("five");
+
+        try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(
+                new FileOutputStream("testdata.dat")))) {
 
             out.writeObject(intQueue);
             out.writeObject(strQueue);
@@ -279,8 +260,8 @@ public class MostRecentlyInsertedQueueTest {
 
         Queue<Integer> intQueueFromFile = null;
         Queue<String> strQueueFromFile = null;
-        try(ObjectInputStream out = new ObjectInputStream(new BufferedInputStream(
-                                            new FileInputStream("testdata.dat")))) {
+        try (ObjectInputStream out = new ObjectInputStream(new BufferedInputStream(
+                new FileInputStream("testdata.dat")))) {
 
             intQueueFromFile = (Queue<Integer>) out.readObject();
             strQueueFromFile = (Queue<String>) out.readObject();

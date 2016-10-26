@@ -1,13 +1,10 @@
 package com.railsreactor.util;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
 public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
-                        implements Serializable {
+        implements Serializable {
     private static final long serialVersionUID = 777;
     private final int CAPACITY;
     private Object[] queue;
@@ -24,7 +21,8 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
     transient private int modificationCount;
 
     public MostRecentlyInsertedQueue(int capacity) {
-        if (capacity <= 0) throw new IllegalArgumentException("capacity must be positive.");
+        if (capacity <= 0) throw new IllegalArgumentException("Capacity must be positive.");
+
         this.CAPACITY = capacity;
         this.queue = new Object[CAPACITY];
     }
@@ -43,6 +41,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
         if (queueIsFull()) {
             shiftElementsToTheLeftByOneStartingFromIndex(0);
             queue[CAPACITY - 1] = element;
+
         } else {
             queue[size] = element;
             size++;
@@ -54,8 +53,8 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
     }
 
     private void shiftElementsToTheLeftByOneStartingFromIndex(int startIndex) {
-        for(int i = startIndex; i <= (size - 2); i++) {
-            queue[i] = queue[i+1];
+        for (int i = startIndex; i <= (size - 2); i++) {
+            queue[i] = queue[i + 1];
         }
     }
 
@@ -87,8 +86,10 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
     @Override
     public void clear() {
         modificationCount++;
+
         for (int i = 0; i < size; i++)
             queue[i] = null;
+
         size = 0;
     }
 
@@ -124,6 +125,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
             return (T[]) Arrays.copyOf(queue, size, newArray.getClass());
 
         System.arraycopy(queue, 0, newArray, 0, size);
+
         if (newArray.length > size)
             newArray[size] = null;
 
@@ -147,34 +149,50 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
 
         @Override
         public E next() {
-            if (expectedModificationCount != modificationCount)
-                throw new ConcurrentModificationException();
+            if (queueIsModifiedFromOutside())
+                throw new ConcurrentModificationException("The queue was modified from outside this iterator.");
 
             if (hasNext()) {
-                @SuppressWarnings("unchecked")
-                E nextElement = (E) queue[currentIndex];
-                lastReturnedElementIndex = currentIndex;
-                currentIndex++;
-
-                return nextElement;
+                return getNextElement();
+            } else {
+                throw new NoSuchElementException("The queue has reached its end. " +
+                        "Next time try to call hasNext() first.");
             }
+        }
 
-            throw new NoSuchElementException();
+        private E getNextElement() {
+            @SuppressWarnings("unchecked")
+            E nextElement = (E) queue[currentIndex];
+            lastReturnedElementIndex = currentIndex;
+            currentIndex++;
+
+            return nextElement;
         }
 
         @Override
         public void remove() {
-            if (expectedModificationCount != modificationCount)
-                throw new ConcurrentModificationException();
+            if (queueIsModifiedFromOutside())
+                throw new ConcurrentModificationException("The queue was modified from outside this iterator.");
 
-            if (lastReturnedElementIndex < 0)
-                throw new IllegalStateException();
+            if (lastReturnedElementIndex >= 0) {
+                removeLastReturnedElement();
+            } else {
+                throw new IllegalStateException("next() hasn't yet been called, or " +
+                        "remove() has been called twice");
+            }
 
+        }
+
+        private void removeLastReturnedElement() {
             shiftElementsToTheLeftByOneStartingFromIndex(lastReturnedElementIndex);
             queue[size - 1] = null;
             size--;
             lastReturnedElementIndex = -1;
             currentIndex--;
+        }
+
+        private boolean queueIsModifiedFromOutside() {
+            return expectedModificationCount != modificationCount;
         }
     }
 
