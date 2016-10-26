@@ -1,9 +1,6 @@
 package com.railsreactor.util;
 
-import java.util.AbstractQueue;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
+import java.util.*;
 
 public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     private final int CAPACITY;
@@ -38,7 +35,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
             throw new NullPointerException("This queue does NOT support null elements.");
 
         if (queueIsFull()) {
-            moveElementsToTheLeftByOne();
+            shiftElementsToTheLeftByOneStartingFromIndex(0);
             queue[CAPACITY - 1] = element;
         } else {
             queue[size] = element;
@@ -50,8 +47,8 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
         return true;
     }
 
-    private void moveElementsToTheLeftByOne() {
-        for(int i = 0; i <= (CAPACITY - 2); i++) {
+    private void shiftElementsToTheLeftByOneStartingFromIndex(int startIndex) {
+        for(int i = startIndex; i <= (size - 2); i++) {
             queue[i] = queue[i+1];
         }
     }
@@ -62,18 +59,72 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
 
     @Override
     public E poll() {
-        return null;
+        if (size == 0)
+            return null;
+
+        @SuppressWarnings("unchecked")
+        E result = (E) queue[0];
+        shiftElementsToTheLeftByOneStartingFromIndex(0);
+        queue[size - 1] = null;
+        size--;
+        modificationCount++;
+
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public E peek() {
+        return (size == 0) ? null : (E) queue[0];
     }
 
     @Override
-    public E peek() {
-        return null;
+    public void clear() {
+        modificationCount++;
+        for (int i = 0; i < size; i++)
+            queue[i] = null;
+        size = 0;
     }
 
     public int capacity() {
         return CAPACITY;
     }
 
+    @Override
+    public boolean contains(Object obj) {
+        return indexOf(obj) != -1;
+    }
+
+    private int indexOf(Object obj) {
+        if (obj != null) {
+            for (int i = 0; i < size; i++)
+                if (obj.equals(queue[i]))
+                    return i;
+        }
+
+        return -1;
+    }
+
+    @Override
+    public Object[] toArray() {
+        return Arrays.copyOf(queue, size);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T[] toArray(T[] newArray) {
+        final int size = this.size;
+        if (newArray.length < size)
+            return (T[]) Arrays.copyOf(queue, size, newArray.getClass());
+
+        System.arraycopy(queue, 0, newArray, 0, size);
+        if (newArray.length > size)
+            newArray[size] = null;
+
+        return newArray;
+    }
+
+    @Override
     public Iterator<E> iterator() {
         return new ThisIterator();
     }
@@ -81,6 +132,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     private final class ThisIterator implements Iterator<E> {
         private int expectedModificationCount = modificationCount;
         private int currentIndex = 0;
+        private int lastReturnedElementIndex = -1;
 
         @Override
         public boolean hasNext() {
@@ -92,11 +144,31 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
             if (expectedModificationCount != modificationCount)
                 throw new ConcurrentModificationException();
 
-            @SuppressWarnings("unchecked")
-            E nextElement = (E) queue[currentIndex];
-            currentIndex++;
+            if (hasNext()) {
+                @SuppressWarnings("unchecked")
+                E nextElement = (E) queue[currentIndex];
+                lastReturnedElementIndex = currentIndex;
+                currentIndex++;
 
-            return nextElement;
+                return nextElement;
+            }
+
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            if (expectedModificationCount != modificationCount)
+                throw new ConcurrentModificationException();
+
+            if (lastReturnedElementIndex < 0)
+                throw new IllegalStateException();
+
+            shiftElementsToTheLeftByOneStartingFromIndex(lastReturnedElementIndex);
+            queue[size - 1] = null;
+            size--;
+            lastReturnedElementIndex = -1;
+            currentIndex--;
         }
     }
 }
