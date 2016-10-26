@@ -149,8 +149,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
 
         @Override
         public E next() {
-            if (queueIsModifiedFromOutside())
-                throw new ConcurrentModificationException("The queue was modified from outside this iterator.");
+            checkQueueNotIllegallyModified();
 
             if (hasNext()) {
                 return getNextElement();
@@ -158,6 +157,28 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
                 throw new NoSuchElementException("The queue has reached its end. " +
                         "Next time try to call hasNext() first.");
             }
+        }
+
+        @Override
+        public void remove() {
+            checkQueueNotIllegallyModified();
+
+            if (lastReturnedElementIndex >= 0) {
+                removeLastReturnedElement();
+            } else {
+                throw new IllegalStateException("next() hasn't yet been called, or " +
+                        "remove() has been called twice");
+            }
+
+        }
+
+        private void checkQueueNotIllegallyModified() {
+            if (queueIsModifiedFromOutside())
+                throw new ConcurrentModificationException("The queue was modified from outside this iterator.");
+        }
+
+        private boolean queueIsModifiedFromOutside() {
+            return expectedModificationCount != modificationCount;
         }
 
         private E getNextElement() {
@@ -169,30 +190,12 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
             return nextElement;
         }
 
-        @Override
-        public void remove() {
-            if (queueIsModifiedFromOutside())
-                throw new ConcurrentModificationException("The queue was modified from outside this iterator.");
-
-            if (lastReturnedElementIndex >= 0) {
-                removeLastReturnedElement();
-            } else {
-                throw new IllegalStateException("next() hasn't yet been called, or " +
-                        "remove() has been called twice");
-            }
-
-        }
-
         private void removeLastReturnedElement() {
             shiftElementsToTheLeftByOneStartingFromIndex(lastReturnedElementIndex);
             queue[size - 1] = null;
             size--;
             lastReturnedElementIndex = -1;
             currentIndex--;
-        }
-
-        private boolean queueIsModifiedFromOutside() {
-            return expectedModificationCount != modificationCount;
         }
     }
 

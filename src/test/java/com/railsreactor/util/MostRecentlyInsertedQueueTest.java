@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Queue;
 
 import static org.junit.Assert.*;
@@ -274,6 +275,38 @@ public class MostRecentlyInsertedQueueTest {
 
         assertArrayEquals(expectedIntArr, actualIntArr);
         assertArrayEquals(expectedStrArr, actualStrArr);
+    }
+
+    @Test
+    public void methodsFromAbstractQueueShouldWorkCorrectly() {
+        Queue<Integer> queue = new MostRecentlyInsertedQueue<>(5);
+        queue.add(1);
+        queue.add(2);
+
+        assertEquals(2, queue.size());
+
+        int element1 = queue.element();
+        int element2 = queue.element();
+
+        assertEquals(1, element1);
+        assertEquals(1, element2);
+        assertEquals(2, queue.size());
+
+        int remove1 = queue.remove();
+
+        assertEquals(1, remove1);
+        assertEquals(1, queue.size());
+
+        queue.addAll(Arrays.asList(2, 3, 4, 5));
+
+        Integer[] expectedArr = {2, 2, 3, 4, 5};
+        Integer[] actualArr = queue.stream().toArray(Integer[]::new);
+
+        assertArrayEquals(expectedArr, actualArr);
+
+        queue.clear();
+
+        assertEquals(0, queue.size());
     }
 
 }
