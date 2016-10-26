@@ -3,12 +3,14 @@ package com.railsreactor.util;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.Queue;
 
 import static org.junit.Assert.*;
 
 public class MostRecentlyInsertedQueueTest {
     private Queue<Integer> intQueue;
+    private Queue<String> strQueue;
 
     @Before
     public void setup() {
@@ -16,6 +18,14 @@ public class MostRecentlyInsertedQueueTest {
         intQueue.offer(1);
         intQueue.offer(2);
         intQueue.offer(3);
+
+        strQueue = new MostRecentlyInsertedQueue<>(5);
+        strQueue.add("one");
+        strQueue.add("two");
+        strQueue.add("three");
+        strQueue.add("four");
+        strQueue.add("five");
+
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -232,7 +242,6 @@ public class MostRecentlyInsertedQueueTest {
         intQueue.add(4);
 
         assertArrayEquals(expectedArr, actualArr);
-
     }
 
     @Test
@@ -256,6 +265,34 @@ public class MostRecentlyInsertedQueueTest {
 
         assertArrayEquals(expectedArr, actualArr);
         assertTrue(originalArr != actualArr);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void queueShouldBeSerializable() throws IOException, ClassNotFoundException {
+        try(ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(
+                                            new FileOutputStream("testdata.dat")))) {
+
+            out.writeObject(intQueue);
+            out.writeObject(strQueue);
+        }
+
+        Queue<Integer> intQueueFromFile = null;
+        Queue<String> strQueueFromFile = null;
+        try(ObjectInputStream out = new ObjectInputStream(new BufferedInputStream(
+                                            new FileInputStream("testdata.dat")))) {
+
+            intQueueFromFile = (Queue<Integer>) out.readObject();
+            strQueueFromFile = (Queue<String>) out.readObject();
+        }
+
+        Integer[] expectedIntArr = {1, 2, 3};
+        Integer[] actualIntArr = intQueueFromFile.stream().toArray(Integer[]::new);
+        String[] expectedStrArr = {"one", "two", "three", "four", "five"};
+        String[] actualStrArr = strQueueFromFile.stream().toArray(String[]::new);
+
+        assertArrayEquals(expectedIntArr, actualIntArr);
+        assertArrayEquals(expectedStrArr, actualStrArr);
     }
 
 }

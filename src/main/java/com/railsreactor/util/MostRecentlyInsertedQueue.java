@@ -1,8 +1,14 @@
 package com.railsreactor.util;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 
-public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
+public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E>
+                        implements Serializable {
+    private static final long serialVersionUID = 777;
     private final int CAPACITY;
     private Object[] queue;
 
@@ -15,7 +21,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
      * The number of times this queue has been <i>structurally modified</i>.
      * Used by the iterator to throw ConcurrentModificationException.
      */
-    private int modificationCount;
+    transient private int modificationCount;
 
     public MostRecentlyInsertedQueue(int capacity) {
         if (capacity <= 0) throw new IllegalArgumentException("capacity must be positive.");
@@ -171,4 +177,5 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
             currentIndex--;
         }
     }
+
 }
