@@ -66,16 +66,24 @@ public class MostRecentlyInsertedBlockingQueue<E> extends ConcurrentMostRecently
 
         lock.lockInterruptibly();
         try {
-            while (size() == 0) {
-                if (nanos <= 0)
-                    return null;
-                nanos = notEmpty.awaitNanos(nanos);
+            if (noElementAddedDuringTimeout(nanos)) {
+                return null;
+            } else {
+                return poll();
             }
-            return poll();
-
         } finally {
             lock.unlock();
         }
+    }
+
+    private boolean noElementAddedDuringTimeout(long nanos) throws InterruptedException {
+        while (size() == 0) {
+            if (nanos <= 0)
+                return true;
+            nanos = notEmpty.awaitNanos(nanos);
+        }
+
+        return false;
     }
 
     @Override
