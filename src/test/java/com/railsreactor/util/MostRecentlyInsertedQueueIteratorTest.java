@@ -1,7 +1,5 @@
 package com.railsreactor.util;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,6 +7,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+
+import static org.junit.Assert.*;
 
 public class MostRecentlyInsertedQueueIteratorTest {
 
@@ -28,7 +28,7 @@ public class MostRecentlyInsertedQueueIteratorTest {
     }
 
     @Test
-    public void iteratorShouldIterateOverAllElementsInCorrectOrder() {
+    public void iterator_Should_IterateOverAllElements_InCorrectOrder() {
         Iterator<Integer> iterator = queue.iterator();
 
         Integer[] expected1 = {1, 2, 3, 4, 5};
@@ -43,25 +43,25 @@ public class MostRecentlyInsertedQueueIteratorTest {
     }
 
     @Test(expected = ConcurrentModificationException.class)
-    public void nextShouldThrowExceptionIfQueueIsModifiedUsingOffer() {
+    public void next_Should_ThrowException_IfQueueIsModified_UsingOffer() {
         queue.offer(10);
         iterator.next();
     }
 
     @Test(expected = ConcurrentModificationException.class)
-    public void nextShouldThrowExceptionIfQueueIsModifiedUsingPoll() {
+    public void next_Should_ThrowException_IfQueueIsModified_UsingPoll() {
         queue.poll();
         iterator.next();
     }
 
     @Test(expected = ConcurrentModificationException.class)
-    public void nextShouldThrowExceptionIfQueueIsModifiedUsingClear() {
+    public void next_Should_ThrowException_IfQueueIsModified_UsingClear() {
         queue.clear();
         iterator.next();
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void nextShouldThrowExceptionIfQueueIsEmpty() {
+    public void next_Should_ThrowException_IfQueueIsEmpty() {
         queue.clear();
         Iterator<Integer> iterator = queue.iterator();
 
@@ -69,33 +69,33 @@ public class MostRecentlyInsertedQueueIteratorTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void nextShouldThrowExceptionIfThereIsNoElementsInQueue() {
+    public void next_Should_ThrowException_IfThereIsNoElementsInQueue() {
         while(true) {
             iterator.next();
         }
     }
 
     @Test(expected = ConcurrentModificationException.class)
-    public void removeShouldThrowExceptionIfQueueIsModified() {
+    public void remove_Should_ThrowException_IfQueueIsModified() {
         queue.offer(10);
         iterator.next();
         iterator.remove();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void removeShouldThrowExceptionIfNextHasNotBeenCalled() {
+    public void remove_Should_ThrowException_IfNextHasNotBeenCalled() {
         iterator.remove();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void removeShouldThrowExceptionIfCalledTwice() {
+    public void remove_Should_ThrowException_IfCalledTwice() {
         iterator.next();
         iterator.remove();
         iterator.remove();
     }
 
     @Test
-    public void removeShouldRemoveElementReturnedByNext() {
+    public void remove_Should_RemoveElementReturnedByNext() {
         iterator.next();
         iterator.remove();
 

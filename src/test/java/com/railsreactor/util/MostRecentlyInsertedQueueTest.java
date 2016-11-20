@@ -18,22 +18,20 @@ public class MostRecentlyInsertedQueueTest {
         intQueue.offer(1);
         intQueue.offer(2);
         intQueue.offer(3);
-
-
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void creatingQueueWithNegativeCapacityShouldThrowException() {
+    public void creatingQueueWithNegativeCapacity_Should_ThrowException() {
         new MostRecentlyInsertedQueue<Integer>(-5);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void creatingQueueWithZeroCapacityShouldThrowException() {
+    public void creatingQueueWithZeroCapacity_Should_ThrowException() {
         new MostRecentlyInsertedQueue<Integer>(0);
     }
 
     @Test
-    public void capacityShouldBeAlwaysConstant() {
+    public void capacity_Should_BeAlwaysConstant() {
         int capacity = 3;
         MostRecentlyInsertedQueue<Integer> queue = new MostRecentlyInsertedQueue<>(capacity);
 
@@ -61,7 +59,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void offerShouldIncreaseSizeByOneWhenQueueIsNotFull() throws Exception {
+    public void offer_Should_IncreaseSizeByOne_WhenQueueIsNotFull() throws Exception {
         Queue<Integer> queue = new MostRecentlyInsertedQueue<>(3);
 
         assertEquals(0, queue.size());
@@ -77,7 +75,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void offerMoreElementsThanCapacityShouldContainCorrectElements() {
+    public void offerMoreElementsThanCapacity_Should_ContainCorrectElements() {
         Queue<Integer> queue = new MostRecentlyInsertedQueue<>(3);
 
         queue.offer(1);
@@ -117,7 +115,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void offerNullValueShouldThrowException() {
+    public void offerNullValue_Should_ThrowException() {
         Queue<Integer> queue = new MostRecentlyInsertedQueue<>(10);
         Integer nullInt = null;
 
@@ -125,14 +123,14 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void pollEmptyQueueShouldReturnNull() {
+    public void pollEmptyQueue_Should_ReturnNull() {
         Queue<Integer> queue = new MostRecentlyInsertedQueue<>(5);
 
         assertNull(queue.poll());
     }
 
     @Test
-    public void pollShouldRemoveOneElementFromHead() {
+    public void poll_Should_RemoveOneElement_FromHead() {
         int poll1 = intQueue.poll();
         Integer[] expected1 = {2, 3};
         Integer[] actual1 = intQueue.stream().toArray(Integer[]::new);
@@ -159,14 +157,14 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void peekEmptyQueueShouldReturnNull() {
+    public void peekEmptyQueue_Should_ReturnNull() {
         Queue<Integer> queue = new MostRecentlyInsertedQueue<>(5);
 
         assertNull(queue.peek());
     }
 
     @Test
-    public void peekShouldReturnHeadElementWithoutRemovingItFromQueue() {
+    public void peek_Should_ReturnHeadElement_WithoutRemovingItFromQueue() {
         int peek1 = intQueue.peek();
         Integer[] expected1 = {1, 2, 3};
         Integer[] actual1 = intQueue.stream().toArray(Integer[]::new);
@@ -180,7 +178,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void clearShouldEmptyQueue() {
+    public void clear_Should_EmptyQueue() {
         intQueue.clear();
 
         assertArrayEquals(new Integer[]{}, intQueue.stream().toArray(Integer[]::new));
@@ -189,7 +187,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void queueShouldAcceptDuplicates() {
+    public void queue_Should_AcceptDuplicates() {
         Queue<String> queue = new MostRecentlyInsertedQueue<>(5);
 
         queue.add("one");
@@ -201,14 +199,14 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void containsShouldReturnTrueOnlyIfThereIsSuchElementInQueue() {
+    public void contains_Should_ReturnTrueOnly_IfThereIsSuchElementInQueue() {
         assertTrue(intQueue.contains(1));
         assertTrue(intQueue.contains(2));
         assertFalse(intQueue.contains(101));
     }
 
     @Test
-    public void toArrayWithoutParamShouldReturnNewArrayWithTheSameElements() {
+    public void toArrayWithoutParam_Should_ReturnNewArrayWithTheSameElements() {
         Object[] expectedArr = {1, 2, 3};
         Object[] actualArr = intQueue.toArray();
 
@@ -220,7 +218,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void toArrayWithParamShouldReturnPassedArrayIfItHasEnoughSize() {
+    public void toArrayWithParam_Should_ReturnPassedArray_IfItHasEnoughSize() {
         Integer[] originalArr = new Integer[3];
         Object[] expectedArr = {1, 2, 3};
 
@@ -232,7 +230,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void toArrayWithParamShouldReturnNewArrayIfPassedArrayIsTooSmall() {
+    public void toArrayWithParam_Should_ReturnNewArray_IfPassedArrayIsTooSmall() {
         Integer[] originalArr = new Integer[2];
         Object[] expectedArr = {1, 2, 3};
 
@@ -244,7 +242,7 @@ public class MostRecentlyInsertedQueueTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void queueShouldBeSerializable() throws IOException, ClassNotFoundException {
+    public void queue_Should_BeSerializable() throws IOException, ClassNotFoundException {
         Queue<String> strQueue = new MostRecentlyInsertedQueue<>(5);
         strQueue.add("one");
         strQueue.add("two");
@@ -278,7 +276,7 @@ public class MostRecentlyInsertedQueueTest {
     }
 
     @Test
-    public void methodsFromAbstractQueueShouldWorkCorrectly() {
+    public void methodsFromAbstractQueue_Should_WorkCorrectly() {
         Queue<Integer> queue = new MostRecentlyInsertedQueue<>(5);
         queue.add(1);
         queue.add(2);

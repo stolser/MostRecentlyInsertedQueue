@@ -20,12 +20,12 @@ public class MostRecentlyInsertedBlockingQueueTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void instantiatingWithNegativeCapacityShouldThrowException() {
+    public void instantiatingWithNegativeCapacity_Should_ThrowException() {
         new MostRecentlyInsertedBlockingQueue(-5);
     }
 
     @Test
-    public void takeFromEmptyQueueShouldNotReturnNullButWaiteForElements()
+    public void takeFromEmptyQueue_Should_Not_ReturnNull_ButWaiteForElements()
             throws InterruptedException {
 
         new Thread(() -> {
@@ -46,7 +46,7 @@ public class MostRecentlyInsertedBlockingQueueTest {
     }
 
     @Test
-    public void pollWithTimeoutFromEmptyQueueShouldNotReturnNullButWaiteForElements()
+    public void pollWithTimeoutFromEmptyQueue_Should_Not_ReturnNull_ButWaiteForElements()
             throws InterruptedException {
 
         new Thread(() -> {
@@ -64,7 +64,7 @@ public class MostRecentlyInsertedBlockingQueueTest {
     }
 
     @Test(timeout = 2100)
-    public void pollWithTimeoutShouldReturnNullIfTimeElapses() throws InterruptedException {
+    public void pollWithTimeout_Should_ReturnNull_IfTimeElapses() throws InterruptedException {
 
         Integer poll = queue.poll(2, TimeUnit.SECONDS);
 
@@ -72,7 +72,7 @@ public class MostRecentlyInsertedBlockingQueueTest {
     }
 
     @Test(timeout = 100)
-    public void putAndOfferWithTimeoutShouldNotBlockIfSizeEqualCapacity() throws InterruptedException {
+    public void putAndOfferWithTimeout_Should_Not_Block_IfSizeEqualCapacity() throws InterruptedException {
         queue.offer(1, 100, TimeUnit.SECONDS);
         queue.offer(2, 100, TimeUnit.SECONDS);
         queue.offer(3, 100, TimeUnit.SECONDS);
@@ -83,7 +83,7 @@ public class MostRecentlyInsertedBlockingQueueTest {
     }
 
     @Test
-    public void remainingCapacityShouldAlwaysReturnMaxValue() throws InterruptedException {
+    public void remainingCapacity_Should_AlwaysReturnMaxValue() throws InterruptedException {
         assertEquals(Integer.MAX_VALUE, queue.remainingCapacity());
 
         queue.offer(1);
@@ -94,7 +94,7 @@ public class MostRecentlyInsertedBlockingQueueTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void drainToShouldThrowException() {
+    public void drainTo_Should_ThrowException() {
         queue.drainTo(new ArrayList<>());
     }
 }
